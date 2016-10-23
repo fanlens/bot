@@ -11,10 +11,20 @@ const connector = new builder.ChatConnector({
   appPassword: "OuyOr7sD4itWCFoQZ5ejcv1"
 });
 const recognizer = new builder.LuisRecognizer('https://api.projectoxford.ai/luis/v1/application?id=837848ff-1d6e-4b8b-91ab-1e431537126c&subscription-key=a07b0358014e495d8640da44a95d6f67');
+const router = new builder.IntentDialog();
 const intents = new builder.IntentDialog({recognizers: [recognizer]});
 const bot = new builder.UniversalBot(connector);
 
-bot.dialog('/', intents);
+bot.dialog('/', router);
+bot.dialog('/eev', intents);
+bot.dialog('/demo', [
+  (session) => builder.Prompts.text(session, 'Hi Christian! How can I help?'),
+  (session) => builder.Prompts.text(session, 'Ok, make it a bit more tech-y; show some more excitement.'),
+  (session) => session.endDialog('Perfect! I\'ll send it out')
+]);
+
+router.matches(/^start demo$/i, (session) => session.beginDialog('/demo'));
+router.onDefault('/eev');
 
 intents.matches('show', [
   (session, args, next) => {
@@ -25,7 +35,7 @@ intents.matches('show', [
   (session, results) => {
     session.send(`right on, fetching ${results.count} comments for tag ${results.tag}`);
     client.get(api('/comments/_random', {count: results.count, with_entity: true}),
-      (err, req, res, obj) => session.endDialog(obj.comments.map((comment, idx) => `${idx + 1}) ${comment.message}`).join('\n\n')));
+      (err, req, res, obj) => session.send(obj.comments.map((comment, idx) => `${idx + 1}) ${comment.message}`).join('\n\n')));
   }
 ]);
 
@@ -43,10 +53,12 @@ intents.matches('evaluate', [
     session.send('alright, just give me 1 sec...');
     client.post(api('/suggestion'),
       {text: results.response},
-      (err, req, res, obj) => session.endDialog('my magic 8ball is telling me this is %s', JSON.stringify(obj.suggestion))
+      (err, req, res, obj) => session.send('my magic 8ball is telling me this is %s', JSON.stringify(obj.suggestion))
     );
   }
 ]);
+
+intents.onDefault((session) => session.endDialog('Sorry didn\'t get that'));
 
 const server = restify.createServer();
 server.post('/eev/api/messages', connector.listen());
