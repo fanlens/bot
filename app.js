@@ -7,8 +7,8 @@ const api = (endpoint, query = {}) => `/v2/tagger${endpoint}?api_key=${TOKEN}&${
 
 const client = restify.createJsonClient('https://fanlens.io');
 const connector = new builder.ChatConnector({
-  appId: "a2e8dab5-dfca-4d44-a5a9-5e5cbd804d80",
-  appPassword: "OuyOr7sD4itWCFoQZ5ejcv1"
+  appId: "a7aa117b-c6f8-4d0c-89c1-d633efbb8a85",
+  appPassword: "kBmKYVXLpzkaC9yzPSAgbaq"
 });
 const recognizer = new builder.LuisRecognizer('https://api.projectoxford.ai/luis/v1/application?id=837848ff-1d6e-4b8b-91ab-1e431537126c&subscription-key=a07b0358014e495d8640da44a95d6f67');
 const router = new builder.IntentDialog();
@@ -61,5 +61,5 @@ intents.matches('evaluate', [
 intents.onDefault((session) => session.endDialog('Sorry didn\'t get that'));
 
 const server = restify.createServer();
-server.post('/eev/api/messages', connector.listen());
+server.post('/v3/eev/api/messages', connector.listen());
 server.listen(process.env.port || 3978, () => console.log('%s listening to %s', server.name, server.url));
