@@ -1,16 +1,20 @@
 const restify = require('restify');
 const builder = require('botbuilder');
+const Swagger = require('swagger-client');
 
-const TOKEN = 'WyI3IiwiOGE3MDFkMGRlNmMzYTNiNDc1NzRmZTRkZDdlNzY5NzUiXQ.CtPxhA.RUIXj5DwSWwe7WfwISu2VBgYBd0';
-const encode = (data) => Object.keys(data).map((key) => [key, data[key]].map(encodeURIComponent).join("=")).join("&");
-const api = (endpoint, query = {}) => `/v2/tagger${endpoint}?api_key=${TOKEN}&${encode(query)}`;
-
-const client = restify.createJsonClient('https://fanlens.io');
-const connector = new builder.ChatConnector({
-  appId: "a7aa117b-c6f8-4d0c-89c1-d633efbb8a85",
-  appPassword: "kBmKYVXLpzkaC9yzPSAgbaq"
+const activitiesApi = new Swagger({
+  url: '/v3/activities/swagger.json',
+  usePromise: true,
+  authorizations: {
+    headerAuth: new Swagger.ApiKeyAuthorization('Authorization-Token', process.env.API_KEY, 'header')
+  }
 });
-const recognizer = new builder.LuisRecognizer('https://api.projectoxford.ai/luis/v1/application?id=837848ff-1d6e-4b8b-91ab-1e431537126c&subscription-key=a07b0358014e495d8640da44a95d6f67');
+
+const connector = new builder.ChatConnector({
+  appId: process.env.EEV_APP_ID,
+  appPassword: process.env.EEV_APP_PASSWORD
+});
+const recognizer = new builder.LuisRecognizer(`https://api.projectoxford.ai/luis/v1/application?id=${process.env.LUIS_ID}&subscription-key=${process.env.LUIS_KEY}`);
 const router = new builder.IntentDialog();
 const intents = new builder.IntentDialog({recognizers: [recognizer]});
 const bot = new builder.UniversalBot(connector);
@@ -33,9 +37,12 @@ intents.matches('show', [
     next({tag, count})
   },
   (session, results) => {
-    session.send(`right on, fetching ${results.count} comments for tag ${results.tag}`);
+    session.send(`right on, fetching ${results.count} comments for tag ${results.tag}`
+    );
     client.get(api('/comments/_random', {count: results.count, with_entity: true}),
-      (err, req, res, obj) => session.send(obj.comments.map((comment, idx) => `${idx + 1}) ${comment.message}`).join('\n\n')));
+      (err, req, res, obj) => session.send(obj.comments.map((comment, idx) =>
+        `${idx + 1}) ${comment.message}`
+      ).join('\n\n')));
   }
 ]);
 
@@ -61,5 +68,5 @@ intents.matches('evaluate', [
 intents.onDefault((session) => session.endDialog('Sorry didn\'t get that'));
 
 const server = restify.createServer();
-server.post('/v3/eev/api/messages', connector.listen());
+server.post(`/v${process.env.VERSION}/eev/api/messages`, connector.listen());
 server.listen(process.env.port || 3978, () => console.log('%s listening to %s', server.name, server.url));
