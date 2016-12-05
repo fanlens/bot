@@ -2,13 +2,16 @@ const restify = require('restify');
 const builder = require('botbuilder');
 const Swagger = require('swagger-client');
 
-const activitiesApi = new Swagger({
-  url: '/v3/activities/swagger.json',
+const client = (swagger) => new Swagger({
+  url: `https://${process.env.DOMAIN}/${swagger}`,
   usePromise: true,
   authorizations: {
     headerAuth: new Swagger.ApiKeyAuthorization('Authorization-Token', process.env.API_KEY, 'header')
   }
 });
+const activitiesApi = client('/v3/activities/swagger.json');
+const modelApi = client('/v3/model/swagger.json');
+
 
 const connector = new builder.ChatConnector({
   appId: process.env.EEV_APP_ID,
@@ -39,10 +42,16 @@ intents.matches('show', [
   (session, results) => {
     session.send(`right on, fetching ${results.count} comments for tag ${results.tag}`
     );
-    client.get(api('/comments/_random', {count: results.count, with_entity: true}),
-      (err, req, res, obj) => session.send(obj.comments.map((comment, idx) =>
-        `${idx + 1}) ${comment.message}`
-      ).join('\n\n')));
+    activitiesApi.then(
+      (api) => api.activity.get_source_ids({
+        source_ids: _.chain(sources).filter('active').map('id').value(),
+        count: results.count,
+        random: true
+      }).then(({status, obj}) => obj)
+        .then(({activities}) => session.send(activities.map((comment, idx) =>
+          `${idx + 1}) ${comment.text}`
+        ).join('\n\n')))
+        .catch((error) => console.log(error)));
   }
 ]);
 
@@ -58,15 +67,16 @@ intents.matches('evaluate', [
   },
   (session, results) => {
     session.send('alright, just give me 1 sec...');
-    client.post(api('/suggestion'),
-      {text: results.response},
-      (err, req, res, obj) => session.send('my magic 8ball is telling me this is %s', JSON.stringify(obj.suggestion))
-    );
+    modelApi.then(
+      (api) => api.suggestion.post_suggestion({body: {text: results.response}})
+        .then(({status, obj}) => obj)
+        .then(({suggestion}) => session.send('my magic 8ball is telling me this is %s', JSON.stringify(suggestion)))
+        .catch((error) => console.log(error)));
   }
 ]);
 
 intents.onDefault((session) => session.endDialog('Sorry didn\'t get that'));
 
 const server = restify.createServer();
-server.post(`/v${process.env.VERSION}/eev/api/messages`, connector.listen());
+server.post('/v3/eev/api/messages', connector.listen());
 server.listen(process.env.port || 3978, () => console.log('%s listening to %s', server.name, server.url));
