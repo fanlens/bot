@@ -12,7 +12,9 @@
   "dependencies": {
     "botbuilder": "^3.4.4",
     "dtrace-provider": "^0.6.0",
+    "lodash": "^4.17.2",
     "restify": "^4.1.1",
     "swagger-client": "^2.1.26"
-  }
+  },
+  "devDependencies": {}
 }
