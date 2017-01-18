@@ -10,11 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "babel-core": "^6.21.0",
+    "babel-preset-node7": "^1.4.0",
+    "babel-register": "^6.18.0",
     "botbuilder": "^3.4.4",
     "dtrace-provider": "^0.6.0",
     "lodash": "^4.17.2",
     "restify": "^4.1.1",
     "swagger-client": "^2.1.26"
-  },
-  "devDependencies": {}
+  }
 }
