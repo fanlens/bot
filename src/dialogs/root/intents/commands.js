@@ -22,7 +22,7 @@ export const register = (intents) => {
       activities.then(
         (api) => {
           api.activity.get_source_ids({
-            source_ids: 2,
+            source_ids: process.env.DEMO_SOURCE_ID,
             count: results.count,
             random: true
           }).then(({status, obj}) => obj)
@@ -49,7 +49,7 @@ export const register = (intents) => {
     (session, results) => {
       model.then(
         (api) => api.prediction.post_model_id_prediction({
-          model_id: '5d368f28-b6ed-11e6-af92-0242ac130007',
+          model_id: process.env.DEMO_MODEL_ID,
           body: {text: results.response}
         }).then(({status, obj}) => obj)
           .then(({prediction}) => session.endDialog('my magic 8ball is telling me this is mostly %s',
