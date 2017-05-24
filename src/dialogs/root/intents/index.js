@@ -1,7 +1,7 @@
 /**
  * Created by chris on 18/01/2017.
  */
-import builder from "botbuilder";
+import * as builder from "botbuilder";
 import * as commands from "./commands";
 import * as toplevel from "./toplevel";
 

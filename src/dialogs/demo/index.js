@@ -2,7 +2,7 @@
  * Created by chris on 18/01/2017.
  */
 
-import builder from "botbuilder";
+import * as builder from "botbuilder";
 
 export const register = (bot) => bot.dialog('/demo', [
   (session) => builder.Prompts.text(session, 'Hi Christian! How can I help?'),

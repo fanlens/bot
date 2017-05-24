@@ -2,17 +2,36 @@
  * Created by chris on 18/01/2017.
  */
 
-import builder from "botbuilder";
+import * as builder from "botbuilder";
+
+import {eev} from "../../../api";
 
 export const recognizer = new builder.LuisRecognizer(`https://api.projectoxford.ai/luis/v1/application?id=${process.env.LUIS_TOP_ID}&subscription-key=${process.env.LUIS_TOP_KEY}`);
 
 export const register = (intents) => {
   intents.matches('intro',
-    (session) => session.endDialog(
-      new builder.Message(session)
-        .sourceEvent({directline: {internal: 'help'}})
-        .textFormat(builder.TextFormat.markdown)
-        .text('I\'m eev')));
+    (session) => {
+      const {message: {address: {channelId}, user: {id: userId}}} = session;
+      session.userData.name = 'boing'; // watch out, seems to get replaced in the login flow
+      console.log();
+      session.endDialog(
+        new builder.Message(session)
+          .sourceEvent({directline: {internal: 'login'}})
+          .textFormat(builder.TextFormat.markdown)
+          .text('Please login in via the following link')
+          .attachments([
+            new builder.HeroCard(session)
+              .buttons([
+                builder.CardAction.openUrl(session, `${process.env.DOMAIN}/v3/eev/login/${channelId}/${userId}`, 'Log In')
+              ])
+          ]));
+
+      // session.endDialog(
+      //   new builder.Message(session)
+      //     .sourceEvent({directline: {internal: 'help'}})
+      //     .textFormat(builder.TextFormat.markdown)
+      //     .text('I\'m eev'));
+    });
   intents.matches('team',
     (session) => {
       session.send(

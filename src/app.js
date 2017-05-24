@@ -1,5 +1,5 @@
 import restify from "restify";
-import builder from "botbuilder";
+import * as builder from "botbuilder";
 import rootDialog from "./dialogs/root/";
 import demoDialog from "./dialogs/demo/";
 

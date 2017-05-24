@@ -2,10 +2,11 @@
  * Created by chris on 18/01/2017.
  */
 import _ from "lodash";
-import builder from "botbuilder";
+import * as builder from "botbuilder";
 import {activities, model} from "../../../api/";
 
-export const recognizer = new builder.LuisRecognizer(`https://api.projectoxford.ai/luis/v1/application?id=${process.env.LUIS_ID}&subscription-key=${process.env.LUIS_KEY}`);
+// export const recognizer = new builder.LuisRecognizer(`https://api.projectoxford.ai/luis/v1/application?id=${process.env.LUIS_ID}&subscription-key=${process.env.LUIS_KEY}`);
+export const recognizer = new builder.LuisRecognizer('https://eastus2.api.cognitive.microsoft.com/luis/v2.0/apps/8e391e57-259c-4b3f-b339-452b76417697?subscription-key=bbf43d5d01754e44ab78b4668262ddc5&timezoneOffset=0&verbose=true&spellCheck=true&q=');
 
 export const register = (intents) => {
   intents.matches('show', [
