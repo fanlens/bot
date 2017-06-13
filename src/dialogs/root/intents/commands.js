@@ -5,8 +5,8 @@ import _ from "lodash";
 import * as builder from "botbuilder";
 import {activities, model} from "../../../api/";
 
-// export const recognizer = new builder.LuisRecognizer(`https://api.projectoxford.ai/luis/v1/application?id=${process.env.LUIS_ID}&subscription-key=${process.env.LUIS_KEY}`);
-export const recognizer = new builder.LuisRecognizer('https://eastus2.api.cognitive.microsoft.com/luis/v2.0/apps/8e391e57-259c-4b3f-b339-452b76417697?subscription-key=bbf43d5d01754e44ab78b4668262ddc5&timezoneOffset=0&verbose=true&spellCheck=true&q=');
+// export const recognizer = new builder.LuisRecognizer(`https://api.projectoxford.ai/luis/v1/application?id=&subscription-key=`);
+export const recognizer = new builder.LuisRecognizer(`https://eastus2.api.cognitive.microsoft.com/luis/v2.0/apps/${process.env.LUIS_ID}?subscription-key=${process.env.LUIS_KEY}&timezoneOffset=0&verbose=true&spellCheck=true&q=`);
 
 export const register = (intents) => {
   intents.matches('show', [
@@ -22,8 +22,8 @@ export const register = (intents) => {
     (session, results) => {
       activities.then(
         (api) => {
-          api.activity.get_source_ids({
-            source_ids: process.env.DEMO_SOURCE_ID,
+          api.activity.get_tags_tag_activities({
+            tag: results.tag,
             count: results.count,
             random: true
           }).then(({status, obj}) => obj)
@@ -39,7 +39,7 @@ export const register = (intents) => {
     (session, args, next) => {
       const text = builder.EntityRecognizer.findEntity(args.entities, 'Text');
       if (!text) {
-        builder.Prompts.text(session, 'Sorry bro, didn\'t understand what you want me to say, please repeat just the text.');
+        builder.Prompts.text(session, 'Sorry, didn\'t understand what you want me to say, please repeat just the text.');
       } else {
         session.send('alright, just give me 1 sec...');
         session.sendTyping();
