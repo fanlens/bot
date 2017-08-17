@@ -14,5 +14,5 @@ demoDialog(bot);
 rootDialog(bot);
 
 const server = restify.createServer();
-server.post('/v3/eev/api/messages', connector.listen());
+server.post('/v4/eev/api/messages', connector.listen());
 server.listen(process.env.port || 3978, () => console.log('%s listening to %s', server.name, server.url));
