@@ -4,8 +4,8 @@ import rootDialog from "./dialogs/root/";
 import demoDialog from "./dialogs/demo/";
 
 const connector = new builder.ChatConnector({
-  appId: process.env.EEV_APP_ID,
-  appPassword: process.env.EEV_APP_PASSWORD
+  appId: process.env.BOT_APP_ID,
+  appPassword: process.env.BOT_APP_PASSWORD
 });
 
 const bot = new builder.UniversalBot(connector);
