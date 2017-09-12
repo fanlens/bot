@@ -12,6 +12,7 @@ const client = (swagger) => new Swagger({
   usePromise: true,
   authorizations: {
     headerAuth: new Swagger.ApiKeyAuthorization('Authorization-Token', process.env.API_KEY, 'header')
+    // TODO use session.userData.jwt
   }
 });
 
