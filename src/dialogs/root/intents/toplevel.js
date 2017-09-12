@@ -37,7 +37,7 @@ export const register = (intents) => {
               .attachments([
                 new builder.HeroCard(session)
                   .buttons([
-                    builder.CardAction.openUrl(session, `${process.env.DOMAIN}/v3/eev/login/${channelId}/${userId}`, 'Log In')
+                    builder.CardAction.openUrl(session, `${process.env.DOMAIN}/v4/eev/login/${channelId}/${userId}`, 'Log In')
                   ])
               ]));
         }

@@ -15,6 +15,6 @@ const client = (swagger) => new Swagger({
   }
 });
 
-export const activities = client('/v3/activities/swagger.json');
+export const activities = client('/v4/activities/swagger.json');
 
-export const model = client('/v3/model/swagger.json');
+export const model = client('/v4/model/swagger.json');
