@@ -1,11 +1,12 @@
 import restify from "restify";
 import * as builder from "botbuilder";
+import config from "./config";
 import rootDialog from "./dialogs/root/";
 import demoDialog from "./dialogs/demo/";
 
 const connector = new builder.ChatConnector({
-  appId: process.env.BOT_APP_ID,
-  appPassword: process.env.BOT_APP_PASSWORD
+  appId: config.app.id,
+  appPassword: config.app.password
 });
 
 const bot = new builder.UniversalBot(connector);
@@ -14,5 +15,5 @@ demoDialog(bot);
 rootDialog(bot);
 
 const server = restify.createServer();
-server.post('/v4/eev/api/messages', connector.listen());
-server.listen(process.env.PORT || 3978, () => console.log('%s listening to %s', server.name, server.url));
+server.post(config.server.endpoint, connector.listen());
+server.listen(config.server.port, config.server.host, () => console.log('%s listening to %s', server.name, server.url));

@@ -3,10 +3,11 @@
  */
 import _ from "lodash";
 import * as builder from "botbuilder";
+import config from "../../../config";
 import {activities, model} from "../../../api/";
 
 // export const recognizer = new builder.LuisRecognizer(`https://api.projectoxford.ai/luis/v1/application?id=&subscription-key=`);
-export const recognizer = new builder.LuisRecognizer(`https://eastus2.api.cognitive.microsoft.com/luis/v2.0/apps/${process.env.LUIS_ID}?subscription-key=${process.env.LUIS_KEY}&timezoneOffset=0&verbose=true&spellCheck=true&q=`);
+export const recognizer = new builder.LuisRecognizer(`https://eastus2.api.cognitive.microsoft.com/luis/v2.0/apps/${config.luis.command.id}?subscription-key=${config.luis.command.key}&timezoneOffset=0&verbose=true&spellCheck=true&q=`);
 
 export const register = (intents) => {
   intents.matches('show', [
@@ -50,7 +51,7 @@ export const register = (intents) => {
     (session, results) => {
       model.then(
         (api) => api.prediction.post_model_id_prediction({
-          model_id: process.env.DEMO_MODEL_ID,
+          model_id: config.demo.modelId,
           body: {text: results.response}
         }).then(({status, obj}) => obj)
           .then(({prediction}) => session.endDialog('my magic 8ball is telling me this is mostly %s',
