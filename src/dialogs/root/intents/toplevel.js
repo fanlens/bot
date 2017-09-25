@@ -3,9 +3,9 @@
  */
 
 import * as builder from "botbuilder";
+import config from "../../../config";
 
-// export const recognizer = new builder.LuisRecognizer(`https://api.projectoxford.ai/luis/v1/application?id=${process.env.LUIS_TOP_ID}&subscription-key=${process.env.LUIS_TOP_KEY}`);
-export const recognizer = new builder.LuisRecognizer(`https://eastus2.api.cognitive.microsoft.com/luis/v2.0/apps/${process.env.LUIS_TOP_ID}?subscription-key=${process.env.LUIS_TOP_KEY}&timezoneOffset=0&verbose=true&spellCheck=true&q=`);
+export const recognizer = new builder.LuisRecognizer(`https://eastus2.api.cognitive.microsoft.com/luis/v2.0/apps/${config.luis.top.id}?subscription-key=${config.luis.top.key}&timezoneOffset=0&verbose=true&spellCheck=true&q=`);
 
 export const register = (intents) => {
     intents.matches('intro',
@@ -37,7 +37,7 @@ export const register = (intents) => {
               .attachments([
                 new builder.HeroCard(session)
                   .buttons([
-                    builder.CardAction.openUrl(session, `${process.env.DOMAIN}/v4/eev/login/${channelId}/${userId}`, 'Log In')
+                    builder.CardAction.openUrl(session, `${config.api.basePath}/eev/login/${channelId}/${userId}`, 'Log In')
                   ])
               ]));
         }
@@ -54,32 +54,32 @@ export const register = (intents) => {
                 .subtitle("Chief Everything Officer")
                 .text("Christian is a lifelong hacker, entrepreneur and researcher, and has over 10 years of experience mainly in the fields of data science and big data.")
                 .images([
-                  builder.CardImage.create(session, `${process.env.DOMAIN}/cdn/img/chris-256.jpg`)
+                  builder.CardImage.create(session, `${config.ui}/static/img/chris-256.jpg`)
                 ])
-                .tap(builder.CardAction.openUrl(session, `${process.env.DOMAIN}/team`)),
+                .tap(builder.CardAction.openUrl(session, `${config.ui}/team`)),
               new builder.HeroCard(session)
                 .title("Martí Cuquet")
                 .subtitle("Mad Scientist-in-Chief")
                 .text("Martí was Senior Postdoctoral Researcher at Semantic Technology Institute, Universität Innsbruck, and joined as Chief Science Officer.")
                 .images([
-                  builder.CardImage.create(session, `${process.env.DOMAIN}/cdn/img/marti-256.jpg`)
+                  builder.CardImage.create(session, `${config.ui}/static/img/marti-256.jpg`)
                 ])
-                .tap(builder.CardAction.openUrl(session, `${process.env.DOMAIN}/team`))]));
+                .tap(builder.CardAction.openUrl(session, `${config.ui}/team`))]));
         session.endDialog(
           new builder.Message(session)
             .sourceEvent({directline: {internal: 'team'}})
-            .text(`More details here: ${process.env.DOMAIN}/team`));
+            .text(`More details here: ${config.ui}/team`));
       });
     intents.matches('terms',
       (session) => session.endDialog(
         new builder.Message(session)
           .sourceEvent({directline: {internal: 'terms'}})
           .textFormat(builder.TextFormat.markdown)
-          .text(`You can find our legal notice and privacy policy here: ${process.env.DOMAIN}/terms`)
+          .text(`You can find our legal notice and privacy policy here: ${config.ui}/terms`)
           .attachments([
             new builder.HeroCard(session)
               .buttons([
-                builder.CardAction.openUrl(session, `${process.env.DOMAIN}/terms`, 'Terms')
+                builder.CardAction.openUrl(session, `${config.ui}/terms`, 'Terms')
               ])
           ])
       ));
